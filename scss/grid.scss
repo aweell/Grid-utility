@@ -1,0 +1,58 @@
+
+//Add a new row to create a custom container-grid-(grid name):
+//header & footer rows and grid-template-areas are set by default
+
+$grids: (
+
+    ("default") (1fr) (1fr) ("main") (),
+
+  /* (grid name) (grid-columns) (grid-rows) (grid-template-areas) (custom-grid-areas added) */
+
+    ("index") (1fr 4fr) (3em 1fr) ("h-sidebar h-main" "sidebar main") (sidebar h-sidebar h-main),
+    
+  );
+  
+//Set yout header & footer heights:
+
+$header-y: ();
+$footer-y: ();
+
+
+//Let the magic works
+
+@mixin default-grid {
+	height:                     		100vh;
+	width:                          	100vw;
+	display: 							grid;	
+}
+
+$default-grid-areas: 					(header main footer);
+
+
+@function template-repeat($string, $times) {
+	$result: "";
+  
+	@for $i from 1 through $times {
+	  $result: $result + $string + " ";
+	} 
+	@return $result ;
+  }
+
+
+@each $grid-name, $columns, $rows, $template, $grid-area in $grids {
+
+	$times: length($columns);
+	
+	.container-grid-#{$grid-name}{
+		@include 						default-grid();
+		grid-template-columns:          $columns;
+		grid-template-rows:             $header-y $rows $footer-y;
+		grid-template-areas: 			template-repeat(header, $times)
+										$template 
+										template-repeat(footer, $times);
+		
+		@each $name in $default-grid-areas{.#{$name}{grid-area: $name;}}
+		@each $name in $grid-area{.#{$name}{grid-area: $name;}}	
+		}
+
+}
